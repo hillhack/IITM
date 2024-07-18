@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OpenAI Model Question Answerer</title>
+    <link rel="stylesheet" href="static/style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>OpenAI Model Question Answerer</h1>
+        <form id="questionForm">
+            <label for="question">Question:</label>
+            <textarea id="question" name="question" rows="10" required></textarea>
+            
+            <label for="token">AIPROXY_TOKEN:</label>
+            <input type="text" id="token" name="token" required>
+            
+            <button type="submit">Submit</button>
+        </form>
+        <div id="result"></div>
+    </div>
+
+    <script>
+        document.getElementById('questionForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const question = document.getElementById('question').value;
+            const token = document.getElementById('token').value;
+            
+            fetch('/evaluate_question', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: new URLSearchParams({
+                    'question': question,
+                    'api_token': token
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    document.getElementById('result').innerHTML = `<p class="error">Error: ${data.error}</p>`;
+                } else {
+                    document.getElementById('result').innerHTML = `<p>Result: ${data.points}</p>`;
+                }
+            })
+            .catch(error => {
+                document.getElementById('result').innerHTML = `<p class="error">Error: ${error}</p>`;
+            });
+        });
+    </script>
+</body>
+</html>
